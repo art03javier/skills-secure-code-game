@@ -31,7 +31,9 @@ def validorder(order: Order):
 
     total_receivable = total_payable - net_payment
 
-    if total_receivable != 0:
-        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, total_receivable)
-    else:
+    if total_receivable < 0:
+        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, abs(total_receivable))
+    elif total_receivable > 0:
         return "Order ID: %s - Full payment received!" % order.id
+    else:
+        return "Order ID: %s - No payment imbalance." % order.id
