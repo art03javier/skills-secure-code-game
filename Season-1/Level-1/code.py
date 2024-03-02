@@ -12,27 +12,35 @@ Follow the instructions below to get started:
 '''
 
 from collections import namedtuple
+from decimal import Decimal
 
 Order = namedtuple('Order', 'id, items')
 Item = namedtuple('Item', 'type, description, amount, quantity')
 
-def validorder(order: Order):
-    net_payment = 0
-    total_payable = 0
+MAX_ITEM_AMOUNT = Decimal('100000')  # maximum price of item in the shop
+MAX_QUANTITY = 100  # maximum quantity of an item in the shop
+MIN_QUANTITY = 0  # minimum quantity of an item in the shop
+MAX_TOTAL = Decimal('1e6')  # maximum total amount accepted for an order
+
+def validorder(order):
+    payments = Decimal('0')
+    expenses = Decimal('0')
 
     for item in order.items:
         if item.type == 'payment':
-            net_payment += item.amount
+            # Sets a reasonable min & max value for the invoice amounts
+            if -MAX_ITEM_AMOUNT <= item.amount <= MAX_ITEM_AMOUNT:
+                payments += Decimal(str(item.amount))
         elif item.type == 'product':
-            total_payable += item.amount * item.quantity
+            if type(item.quantity) is int and MIN_QUANTITY < item.quantity <= MAX_QUANTITY and MIN_QUANTITY < item.amount <= MAX_ITEM_AMOUNT:
+                expenses += Decimal(str(item.amount)) * Decimal(str(item.quantity))
         else:
             return "Invalid item type: %s" % item.type
 
-    total_receivable = total_payable - net_payment
+    if abs(payments) > MAX_TOTAL or expenses > MAX_TOTAL:
+        return "Total amount payable for an order exceeded"
 
-    if total_receivable < 0:
-        return "Order ID: %s - Total payment exceeded: $%0.2f" % (order.id, abs(total_receivable))
-    elif total_receivable > 0:
-        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, abs(total_receivable))
+    if payments != expenses:
+        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, payments - expenses)
     else:
         return "Order ID: %s - Full payment received!" % order.id
