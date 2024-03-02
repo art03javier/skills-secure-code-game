@@ -40,7 +40,7 @@ def validorder(order):
     if abs(payments) > MAX_TOTAL or expenses > MAX_TOTAL:
         return "Total amount payable for an order exceeded"
 
-    if payments != expenses:
+    if payments - expenses != 0:
         return "Order ID: %s - Payment imbalance: $%s" % (order.id, abs(payments - expenses).quantize(Decimal('0.00')))
     else:
         return "Order ID: %s - Full payment received!" % order.id
