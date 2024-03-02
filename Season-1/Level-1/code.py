@@ -28,23 +28,22 @@ def validorder(order):
 
     for item in order.items:
         if item.type == 'payment':
-            # Avoid using extremely large values that may lead to underflow
-            if -MAX_ITEM_AMOUNT <= item.amount <= MAX_ITEM_AMOUNT:
-                payments += Decimal(str(item.amount))
+            # Use Decimal to handle precision issues and avoid underflow
+            payments += Decimal(str(item.amount)) * Decimal(str(item.quantity))
         elif item.type == 'product':
             if (
                 type(item.quantity) is int
                 and MIN_QUANTITY < item.quantity <= MAX_QUANTITY
                 and MIN_QUANTITY < item.amount <= MAX_ITEM_AMOUNT
             ):
-                expenses += Decimal(str(item.amount)) * item.quantity
+                expenses += Decimal(str(item.amount)) * Decimal(str(item.quantity))
         else:
             return "Invalid item type: %s" % item.type
-    
+
     if abs(payments) > MAX_TOTAL or expenses > MAX_TOTAL:
         return "Total amount payable for an order exceeded"
 
     if payments != expenses:
-        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, float(payments - expenses))
+        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, payments - expenses)
     else:
         return "Order ID: %s - Full payment received!" % order.id
