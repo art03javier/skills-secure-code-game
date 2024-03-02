@@ -37,16 +37,16 @@ def validorder(order):
                 and MIN_QUANTITY < item.quantity <= MAX_QUANTITY
                 and MIN_QUANTITY < item.amount <= MAX_ITEM_AMOUNT
             ):
-                expenses += Decimal(str(item.amount)) * item.quantity
+                expenses += Decimal(str(item.amount)) * Decimal(str(item.quantity))
             else:
                 return "Invalid quantity or amount for product"
         else:
             return "Invalid item type: %s" % item.type
-
+    
     if abs(payments) > MAX_TOTAL or expenses > MAX_TOTAL:
         return "Total amount payable for an order exceeded"
 
     if payments != expenses:
-        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, payments - expenses)
+        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, expenses - payments)
     else:
         return "Order ID: %s - Full payment received!" % order.id
