@@ -19,7 +19,6 @@ Item = namedtuple('Item', 'type, description, amount, quantity')
 def validorder(order: Order):
     net_payment = 0
     total_payable = 0
-    total_receivable = 0
 
     for item in order.items:
         if item.type == 'payment':
