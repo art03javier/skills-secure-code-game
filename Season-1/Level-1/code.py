@@ -28,7 +28,7 @@ def validorder(order):
 
     for item in order.items:
         if item.type == 'payment':
-            # Sets a reasonable min & max value for the invoice amounts
+            # Avoid using extremely large values that may lead to underflow
             if -MAX_ITEM_AMOUNT <= item.amount <= MAX_ITEM_AMOUNT:
                 payments += Decimal(str(item.amount))
         elif item.type == 'product':
@@ -40,11 +40,11 @@ def validorder(order):
                 expenses += Decimal(str(item.amount)) * item.quantity
         else:
             return "Invalid item type: %s" % item.type
-
+    
     if abs(payments) > MAX_TOTAL or expenses > MAX_TOTAL:
         return "Total amount payable for an order exceeded"
 
     if payments != expenses:
-        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, payments - expenses)
+        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, float(payments - expenses))
     else:
         return "Order ID: %s - Full payment received!" % order.id
