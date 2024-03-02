@@ -27,7 +27,9 @@ def validorder(order: Order):
         else:
             return "Invalid item type: %s" % item.type
 
-    if net != 0:
+    if net > 0:
         return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, net)
+    elif net < 0:
+        return "Order ID: %s - Total amount payable for an order exceeded" % order.id
     else:
         return "Order ID: %s - Full payment received!" % order.id
