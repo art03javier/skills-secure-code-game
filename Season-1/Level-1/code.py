@@ -41,6 +41,6 @@ def validorder(order):
         return "Total amount payable for an order exceeded"
 
     if payments != expenses:
-        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, payments - expenses)
+        return "Order ID: %s - Payment imbalance: $%s" % (order.id, abs(payments - expenses).quantize(Decimal('0.00')))
     else:
         return "Order ID: %s - Full payment received!" % order.id
